@@ -1,0 +1,22 @@
+{
+  "beach": ["shore"],
+  "person": ["jawn", "bol"],
+  "people": ["jawns", "bols"],
+  "girl": ["jawn", "shorty"],
+  "girls": ["jawns", "shorties"],
+  "sandwich": ["hoagie", "grinder"],
+  "sandwiches": ["hoagies", "grinders"],
+  "food": ["wooder ice"],
+  "friend": ["jawn", "homie"],
+  "friends": ["jawns", "homies"],
+  "thing": ["jawn"],
+  "things": ["jawns"],
+  "car": ["whip", "ride"],
+  "cars": ["whips", "rides"],
+  "house": ["crib"],
+  "houses": ["cribs"],
+  "dog": ["pup"],
+  "dogs": ["pups"],
+  "you": ["youse"],
+  "you all": ["youse"]
+}

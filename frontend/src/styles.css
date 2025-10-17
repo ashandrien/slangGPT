@@ -1,0 +1,41 @@
+:root{
+  --bg: #f7f7fb;
+  --panel: #ffffff;
+  --muted: #6b7280;
+  --border: #e6e7eb;
+  --accent: #2563eb; /* blue */
+  --user-bg: #e8f0ff;
+  --assistant-bg: #f3f4f6;
+}
+
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#0f172a}
+.app-root{max-width:920px;margin:28px auto;padding:20px}
+.app-header{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.app-header h1{margin:0;font-size:20px}
+.subtitle{margin:0;color:var(--muted);font-size:13px}
+.app-main{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;box-shadow:0 1px 2px rgba(15,23,42,0.04)}
+.app-footer{text-align:center;margin-top:12px;color:var(--muted)}
+
+.chat-root{display:flex;flex-direction:column;height:60vh;min-height:360px}
+.message-list{overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.empty{color:var(--muted);text-align:center;padding:30px}
+.message{display:flex}
+.message.user{justify-content:flex-end}
+.message.assistant{justify-content:flex-start}
+.bubble{max-width:78%;padding:10px;border-radius:10px;border:1px solid transparent}
+.message.user .bubble{background:var(--user-bg);border-color:rgba(37,99,235,0.12)}
+.message.assistant .bubble{background:var(--assistant-bg)}
+.role{font-size:11px;color:var(--muted);margin-bottom:6px}
+.text{white-space:pre-wrap;color:#0f172a}
+
+.composer{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border);background:linear-gradient(180deg,transparent,rgba(0,0,0,0.02))}
+.composer input{flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);outline:none}
+.composer input:focus{box-shadow:0 0 0 3px rgba(37,99,235,0.08);border-color:var(--accent)}
+.composer button{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+.composer button:disabled{opacity:0.5;cursor:not-allowed}
+
+@media (max-width:600px){
+  .app-root{margin:12px}
+  .bubble{max-width:92%}
+}

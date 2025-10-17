@@ -1,0 +1,63 @@
+from typing import List
+
+# Philly slang mapping. Keep this small and extendable.
+PHILLY_SLANG = {
+    "person": "bol",
+    "people": "bols",
+    "girl": "jawn",
+    "girls": "jawns",
+    "sandwich": "hoagie",
+    "sandwiches": "hoagies",
+    "friend": "jawn",
+    "friends": "jawns",
+    "thing": "jawn",
+    "things": "jawns",
+    "car": "whip",
+    "cars": "whips",
+    "house": "crib",
+    "houses": "cribs",
+    "dog": "pup",
+    "dogs": "pups",
+}
+
+
+def pluralize_slang(slang: str) -> str:
+    """Very small pluralize helper used if needed."""
+    if slang.endswith("y"):
+        return slang[:-1] + "ies"
+    return slang + "s"
+
+
+def convert_to_philly_slang(nlp, text: str) -> str:
+    """Convert input text to Philly slang using the provided spaCy `nlp`.
+
+    Args:
+        nlp: a spaCy Language instance (e.g. spacy.load(...))
+        text: input text to convert
+
+    Returns:
+        Converted text as a string.
+    """
+    doc = nlp(text)
+    out_tokens: List[str] = []
+    for token in doc:
+        is_plural = token.tag_ == "NNS"
+        base = token.text.lower()
+        if token.pos_ == "NOUN" and base in PHILLY_SLANG:
+            out_tokens.append(PHILLY_SLANG[base])
+        elif token.pos_ == "NOUN":
+            out_tokens.append("jawn" if not is_plural else "jawns")
+        else:
+            out_tokens.append(token.text)
+
+    # Reconstruct text preserving punctuation spacing
+    output = ""
+    for tok, orig in zip(out_tokens, doc):
+        if orig.is_punct:
+            output += tok
+        else:
+            output += (" " + tok)
+    return output.strip()
+
+
+__all__ = ["convert_to_philly_slang", "PHILLY_SLANG", "pluralize_slang"]
