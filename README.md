@@ -1,3 +1,4 @@
+
 # SlangGPT — Local development README
 
 This README shows how to run the SlangGPT app locally (backend + frontend) without Docker.
@@ -103,3 +104,9 @@ Security
 - Keep `.env` out of source control. Do not commit API keys.
 
 That's it — open issues or ask me to help automate these steps further (scripts, Makefile, Dockerfile adjustments, etc).
+=======
+## Slang GPT
+A vibe-coded monstrosity with the following pieces:
+* Python
+* Vite
+* React
