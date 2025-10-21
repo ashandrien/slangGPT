@@ -9,8 +9,8 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 ### CONFIG — edit these before running ###
 # Remote SSH user and host
-REMOTE_USER="user"
-REMOTE_HOST="example.com"
+REMOTE_USER="root"
+REMOTE_HOST="148.230.95.212"
 # Remote destination path (repo root on server)
 REMOTE_PATH="/home/user/apps/phillygpt"
 # SSH port (optional)
@@ -28,12 +28,31 @@ cd "$ROOT_DIR/frontend"
 npm ci
 npm run build
 
+# Copy optional preview image into dist so it will be deployed and available at /assets/teaser.svg (or .png)
+for IMG in teaser.svg teaser.png; do
+  if [ -f "$ROOT_DIR/frontend/public/assets/$IMG" ]; then
+    mkdir -p "$ROOT_DIR/frontend/dist/assets"
+    cp "$ROOT_DIR/frontend/public/assets/$IMG" "$ROOT_DIR/frontend/dist/assets/$IMG"
+    echo "Copied $IMG into frontend dist assets"
+  fi
+done
+
 echo "Syncing frontend build to server: $REMOTE:$REMOTE_PATH/backend/static/"
 ssh -p $SSH_PORT $REMOTE "mkdir -p $REMOTE_PATH/backend/static"
 rsync -avz --delete "$ROOT_DIR/frontend/dist/" $REMOTE:$REMOTE_PATH/backend/static/
 
-echo "Syncing backend code to server (excluding .venv)..."
-rsync -avz --delete --exclude '.venv' --exclude 'node_modules' "$ROOT_DIR/backend/" $REMOTE:$REMOTE_PATH/backend/
+# Also ensure teaser.svg/png is present in backend static assets (local copy)
+for IMG in teaser.svg teaser.png; do
+  if [ -f "$ROOT_DIR/frontend/public/assets/$IMG" ]; then
+    mkdir -p "$ROOT_DIR/backend/static/assets"
+    cp "$ROOT_DIR/frontend/public/assets/$IMG" "$ROOT_DIR/backend/static/assets/$IMG"
+    echo "Copied $IMG into backend static assets"
+  fi
+done
+
+echo "Syncing backend code to server (excluding .venv and backend static assets so frontend assets are authoritative)..."
+# Exclude backend/static/assets to avoid clobbering the freshly-deployed frontend assets
+rsync -avz --delete --exclude '.venv' --exclude 'node_modules' --exclude 'static/assets' "$ROOT_DIR/backend/" $REMOTE:$REMOTE_PATH/backend/
 
 echo "Running remote setup on server"
 ssh -p $SSH_PORT $REMOTE bash -s <<EOF
@@ -53,14 +72,24 @@ if [ ! -d .venv ]; then
   pip install --upgrade pip setuptools wheel
   pip install -r requirements.txt
 else
-  echo ".venv already exists — skipping venv creation. If you want to recreate it, remove .venv and re-run."
+  echo ".venv already exists — activating and ensuring required packages are installed."
+  . .venv/bin/activate
+  # Make sure pip and wheel are up-to-date and install requirements (idempotent)
+  pip install --upgrade pip setuptools wheel || true
+  pip install -r requirements.txt || true
 fi
 
 # Restart the backend using systemd if available, otherwise use nohup
 if [ "$USE_SYSTEMD" = "true" ]; then
   echo "Attempting to restart systemd service: $SYSTEMD_SERVICE_NAME"
-  sudo systemctl restart $SYSTEMD_SERVICE_NAME || true
-  sudo systemctl status $SYSTEMD_SERVICE_NAME --no-pager || true
+  # Try restart with sudo if available, otherwise try without sudo
+  if command -v sudo >/dev/null 2>&1; then
+    sudo systemctl restart $SYSTEMD_SERVICE_NAME || true
+    sudo systemctl status $SYSTEMD_SERVICE_NAME --no-pager || true
+  else
+    systemctl restart $SYSTEMD_SERVICE_NAME || true
+    systemctl status $SYSTEMD_SERVICE_NAME --no-pager || true
+  fi
 else
   echo "Starting uvicorn with nohup (background)"
   # Kill existing uvicorn processes (best-effort)
@@ -70,6 +99,16 @@ else
   sleep 1
   echo "Uvicorn logs (last 10 lines):"
   tail -n 10 uvicorn.log || true
+fi
+
+# If nginx is installed, reload it to ensure new static assets and certs are active
+if command -v nginx >/dev/null 2>&1; then
+  echo "Reloading nginx to pick up new static assets..."
+  if command -v sudo >/dev/null 2>&1; then
+    sudo systemctl reload nginx || true
+  else
+    systemctl reload nginx || true
+  fi
 fi
 EOF
 

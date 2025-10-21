@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+env/
+venv/
+/.venv-test/
+/.venv-test
+
+# Backend env file (do not commit)
+/backend/.env
+
+# macOS
+.DS_Store
+
+# Node
+/frontend/node_modules/
+/frontend/dist/
+
+# Logs
+/tmp/
+*.log

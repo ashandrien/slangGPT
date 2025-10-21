@@ -19,6 +19,17 @@ export default defineConfig(({ command }) => ({
         changeOrigin: true,
         secure: false,
       },
+        // Support OpenAI-backed endpoint and dev helpers
+        '/openai_slang': {
+          target: 'http://127.0.0.1:8000',
+          changeOrigin: true,
+          secure: false,
+        },
+        '/reload_slang': {
+          target: 'http://127.0.0.1:8000',
+          changeOrigin: true,
+          secure: false,
+        },
     },
   },
 }))

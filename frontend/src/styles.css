@@ -6,13 +6,44 @@
   --accent: #2563eb; /* blue */
   --user-bg: #e8f0ff;
   --assistant-bg: #f3f4f6;
+  /* Heading font variable; the font files should be placed in public/assets/fonts/
+     Example filenames the script expects (place your files there):
+       - MyFont-Regular.woff2
+       - MyFont-Bold.woff2
+     Update the family name below if you use different files. */
+  --heading-font: 'MyFont', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }
 
 *{box-sizing:border-box}
 body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:var(--bg); color:#0f172a}
 .app-root{max-width:920px;margin:28px auto;padding:20px}
 .app-header{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
-.app-header h1{margin:0;font-size:20px}
+.app-header h1{margin:0;font-size:55px;color:green;}
+
+/* Custom heading font face. Put your font files in frontend/public/assets/fonts/ */
+@font-face{
+  font-family: 'MyFont';
+  src: url('/assets/fonts/MyFont-Regular.woff2') format('woff2'),
+    url('/assets/fonts/MyFont-Regular.woff') format('woff'),
+    url('/assets/fonts/MyFont-Regular.ttf') format('truetype'),
+    url('/assets/fonts/MyFont-Regular.svg#MyFont') format('svg');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face{
+  font-family: 'MyFont';
+  src: url('/assets/fonts/MyFont-Bold.woff2') format('woff2'),
+    url('/assets/fonts/MyFont-Bold.woff') format('woff'),
+    url('/assets/fonts/MyFont-Bold.ttf') format('truetype'),
+    url('/assets/fonts/MyFont-Bold.svg#MyFont') format('svg');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Apply the custom heading font to h1 only */
+.app-header h1{font-family:var(--heading-font);}
 .subtitle{margin:0;color:var(--muted);font-size:13px}
 .app-main{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:12px;box-shadow:0 1px 2px rgba(15,23,42,0.04)}
 .app-footer{text-align:center;margin-top:12px;color:var(--muted)}
@@ -20,12 +51,28 @@ body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe
 .chat-root{display:flex;flex-direction:column;height:60vh;min-height:360px}
 .message-list{overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
 .empty{color:var(--muted);text-align:center;padding:30px}
-.message{display:flex}
+.message{display:flex;align-items:flex-end}
 .message.user{justify-content:flex-end}
 .message.assistant{justify-content:flex-start}
-.bubble{max-width:78%;padding:10px;border-radius:10px;border:1px solid transparent}
+.bubble{max-width:78%;padding:12px;border-radius:12px;border:1px solid transparent;position:relative}
 .message.user .bubble{background:var(--user-bg);border-color:rgba(37,99,235,0.12)}
 .message.assistant .bubble{background:var(--assistant-bg)}
+
+/* Speech bubble tail for assistant (left side) */
+.message.assistant .bubble::after{
+  content:"";
+  position:absolute;
+  left:-9px; /* place tail closer to avatar */
+  bottom:12px;
+  width:0;height:0;
+  border-top:8px solid transparent;
+  border-bottom:8px solid transparent;
+  border-right:8px solid var(--assistant-bg);
+}
+
+/* Assistant art placed to the left of the bubble */
+.assistant-art{display:flex;align-items:flex-end;margin-right:10px;margin-left:0}
+.assistant-art img{width:48px;height:48px;object-fit:cover;border-radius:8px;}
 .role{font-size:11px;color:var(--muted);margin-bottom:6px}
 .text{white-space:pre-wrap;color:#0f172a}
 
@@ -34,6 +81,10 @@ body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe
 .composer input:focus{box-shadow:0 0 0 3px rgba(37,99,235,0.08);border-color:var(--accent)}
 .composer button{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
 .composer button:disabled{opacity:0.5;cursor:not-allowed}
+
+/* Toggle for local vs OpenAI conversion */
+.toggle-row{display:flex;align-items:center;gap:8px;margin-left:8px;color:var(--muted);font-size:13px}
+.toggle-row input{width:16px;height:16px}
 
 @media (max-width:600px){
   .app-root{margin:12px}

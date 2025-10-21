@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0" stop-color="#0ea5a4"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <g fill="#fff" font-family="Inter, Arial, sans-serif">
+  <text x="60" y="190" font-size="64" font-weight="700">SlangGPT</text>
+  <text x="60" y="270" font-size="32" opacity="0.95">Translate text into local slang & chat with a region-flavored assistant</text>
+  </g>
+  <g transform="translate(900,420) scale(1)">
+    <rect x="0" y="0" width="240" height="120" rx="12" fill="#ffffff20"/>
+  <text x="120" y="70" font-family="Inter, Arial, sans-serif" font-size="28" text-anchor="middle" fill="#fff">example.com</text>
+  </g>
+</svg>

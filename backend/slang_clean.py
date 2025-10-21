@@ -26,9 +26,25 @@ PHILLY_SLANG = {
 def convert_to_philly_slang(nlp, text: str) -> str:
     doc = nlp(text)
     out: List[str] = []
-    for token in doc:
+    # Iterate by index so we can detect the next token reliably (doc.index
+    # is unsafe when duplicate token text exists).
+    for i, token in enumerate(doc):
         base = token.text.lower()
-        if token.pos_ == "NOUN" and base in PHILLY_SLANG:
+        # Map ChatGPT to a playful localized name
+        if base == "chatgpt":
+            out.append("Philly friggin' GPT")
+            continue
+        # If this token is a noun and the next token is also a noun, leave
+        # this token unchanged; only translate the final noun in a run of
+        # adjacent nouns.
+        next_is_noun = False
+        if (i + 1) < len(doc):
+            next_tok = doc[i + 1]
+            next_is_noun = next_tok.pos_ == "NOUN"
+
+        if token.pos_ == "NOUN" and next_is_noun:
+            out.append(token.text)
+        elif token.pos_ == "NOUN" and base in PHILLY_SLANG:
             out.append(PHILLY_SLANG[base])
         elif token.pos_ == "NOUN":
             out.append("jawn" if token.tag_ != "NNS" else "jawns")

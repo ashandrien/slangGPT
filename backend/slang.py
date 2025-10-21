@@ -1,65 +1,65 @@
 from typing import List, Union
 import json
 import random
+import os
 from pathlib import Path
 
-# Load the PHILLY_SLANG mapping from data/philly_slang.json if present. This
-# keeps the data separate from code so editors and translators can update it
-# without touching Python.
-_data_path = Path(__file__).resolve().parent / "data" / "philly_slang.json"
-# Track the file mtime so we can reload the mapping at runtime when the file
-# changes on disk. Initialize PHILLY_SLANG and _philly_slang_mtime from disk
-# if possible.
-_philly_slang_mtime = None
-if _data_path.exists():
-    try:
-        PHILLY_SLANG = json.loads(_data_path.read_text(encoding="utf8"))
-        try:
-            _philly_slang_mtime = _data_path.stat().st_mtime
-        except Exception:
-            _philly_slang_mtime = None
-    except Exception:
-        PHILLY_SLANG = {}
+# Generic, configurable slang mapping loader.
+# Default file is `backend/data/slang.json`; fall back to the historic
+# `philly_slang.json` if present for backwards compatibility.
+_module_dir = Path(__file__).resolve().parent
+_default_file = _module_dir / "data" / "slang.json"
+_fallback_file = _module_dir / "data" / "philly_slang.json"
+
+# Allow override via environment variable SLANG_FILE (absolute or relative
+# to the backend module directory).
+_env_path = os.getenv("SLANG_FILE")
+if _env_path:
+    _data_path = Path(_env_path) if Path(_env_path).is_absolute() else _module_dir / _env_path
 else:
-    # Fallback mapping if the JSON file is missing or unreadable
-    # Use list-valued fallbacks for consistency with the JSON file format
-    PHILLY_SLANG = {
-        "person": ["bol"],
-        "people": ["bols"],
-        "girl": ["jawn"],
-        "girls": ["jawns"],
-        "sandwich": ["hoagie"],
-        "sandwiches": ["hoagies"],
-        "friend": ["jawn"],
-        "friends": ["jawns"],
-        "thing": ["jawn"],
-        "things": ["jawns"],
-        "car": ["whip"],
-        "cars": ["whips"],
-        "house": ["crib"],
-        "houses": ["cribs"],
-        "dog": ["pup"],
-        "dogs": ["pups"],
+    _data_path = _default_file if _default_file.exists() else _fallback_file
+
+# Track mtime so we can reload dynamic edits without restarting the server.
+_slang_mtime = None
+if _data_path and _data_path.exists():
+    try:
+        SLANG_MAP = json.loads(_data_path.read_text(encoding="utf8"))
+        try:
+            _slang_mtime = _data_path.stat().st_mtime
+        except Exception:
+            _slang_mtime = None
+    except Exception:
+        SLANG_MAP = {}
+else:
+    # Reasonable minimal fallback mapping so the app is still usable for demo.
+    SLANG_MAP = {
+        "person": ["friend"],
+        "people": ["friends"],
+        "sandwich": ["sandwich"],
+        "car": ["car"],
     }
 
 
-def reload_philly_slang() -> None:
-    """Reload the PHILLY_SLANG mapping from the JSON file on disk.
+def reload_slang_mapping() -> None:
+    """Reload the SLANG_MAP mapping from the JSON file on disk.
 
-    This updates the module-level PHILLY_SLANG mapping and the cached
+    This updates the module-level SLANG_MAP mapping and the cached
     modification time so future calls can detect changes.
     """
-    global PHILLY_SLANG, _philly_slang_mtime
+    global SLANG_MAP, _slang_mtime, _data_path
     try:
-        if _data_path.exists():
-            PHILLY_SLANG = json.loads(_data_path.read_text(encoding="utf8"))
+        if _data_path and _data_path.exists():
+            SLANG_MAP = json.loads(_data_path.read_text(encoding="utf8"))
             try:
-                _philly_slang_mtime = _data_path.stat().st_mtime
+                _slang_mtime = _data_path.stat().st_mtime
             except Exception:
-                _philly_slang_mtime = None
+                _slang_mtime = None
     except Exception:
         # If reload fails, keep the previous mapping and mtime
         return
+
+# Backwards-compatible name for reload helper
+reload_philly_slang = reload_slang_mapping
 
 
 def pluralize_slang(slang: str) -> str:
@@ -70,105 +70,140 @@ def pluralize_slang(slang: str) -> str:
 
 
 def convert_to_philly_slang(nlp, text: str) -> str:
-    """Convert input text to Philly slang using the provided spaCy `nlp`.
+    """Convert input text to a configured local slang using the provided spaCy `nlp`.
 
-    Args:
-        nlp: a spaCy Language instance (e.g. spacy.load(...))
-        text: input text to convert
-
-    Returns:
-        Converted text as a string.
+    Note: the function name is kept for compatibility with existing callers
+    (for example `backend.main`) but the mapping it uses is generic and
+    loaded from `SLANG_MAP` (loaded from `data/slang.json` by default).
     """
     # Auto-reload mapping if the JSON file changed on disk since we last
-    # loaded it. This allows editing `backend/data/philly_slang.json` to take
-    # effect without restarting the backend.
+    # loaded it. This allows editing the JSON file to take effect without
+    # restarting the backend.
     try:
-        if _data_path.exists():
+        if _data_path and _data_path.exists():
             mtime = _data_path.stat().st_mtime
-            if _philly_slang_mtime is None or mtime != _philly_slang_mtime:
-                reload_philly_slang()
+            if _slang_mtime is None or mtime != _slang_mtime:
+                reload_slang_mapping()
     except Exception:
         # Non-fatal: proceed with the currently loaded mapping
         pass
 
     doc = nlp(text)
-    out_tokens: List[str] = []
-    skip_next = False
-    for i, token in enumerate(doc):
-        if skip_next:
-            skip_next = False
-            continue
 
-        # Handle multi-token phrase 'you all' (case-insensitive)
-        if token.text.lower() == "you" and (i + 1) < len(doc):
-            next_tok = doc[i + 1]
-            if next_tok.text.lower() == "all":
-                # Found 'you all' -> check mapping for the phrase
-                phrase_key = "you all"
-                candidate = PHILLY_SLANG.get(phrase_key)
-                if candidate:
+    output = ""
+    # Process sentence-by-sentence so we can limit noun replacements per sentence
+    inserted_adj_noun = False
+    inserted_adverb = False
+
+    for sent in doc.sents:
+        noun_replacements = 0
+        first_noun_skipped = False
+        i = 0
+        while i < len(sent):
+            token = sent[i]
+            replacement = token.text
+            whitespace = token.whitespace_
+
+            if not inserted_adverb and token.pos_ == "ADV":
+                inserted = "Friggin'" if token.text and token.text[0].isupper() else "friggin'"
+                output += inserted + " "
+                inserted_adverb = True
+
+            if token.text.lower() == "you" and (i + 1) < len(sent):
+                next_tok = sent[i + 1]
+                if next_tok.text.lower() == "all":
+                    phrase_key = "you all"
+                    candidate = SLANG_MAP.get(phrase_key)
+                    if candidate:
+                        pick = random.choice(candidate) if isinstance(candidate, list) else candidate
+                        if token.text and token.text[0].isupper():
+                            pick = pick.capitalize()
+                        replacement = pick
+                        whitespace = next_tok.whitespace_
+                        i += 2
+                        output += replacement + whitespace
+                        continue
+
+            base = token.text.lower()
+            if base == "chatgpt":
+                replacement = "Local friggin' GPT"
+                output += replacement + whitespace
+                i += 1
+                continue
+            is_plural = token.tag_ == "NNS"
+
+            if (
+                not inserted_adj_noun
+                and token.pos_ == "ADJ"
+                and (i + 1) < len(sent)
+                and sent[i + 1].pos_ in ("NOUN", "PROPN")
+            ):
+                inserted = "Friggin'" if token.is_sent_start and token.text and token.text[0].isupper() else "friggin'"
+                output += token.text + whitespace + inserted + " "
+                inserted_adj_noun = True
+                i += 1
+                continue
+
+            if token.pos_ == "PRON":
+                if base in SLANG_MAP:
+                    candidate = SLANG_MAP.get(base)
                     pick = random.choice(candidate) if isinstance(candidate, list) else candidate
-                    # Preserve capitalization if the first token was capitalized
-                    if token.text[0].isupper():
+                    if token.text and token.text[0].isupper():
                         pick = pick.capitalize()
-                    out_tokens.append(pick)
-                    skip_next = True
+                    replacement = pick
+                else:
+                    replacement = token.text
+                output += replacement + whitespace
+                i += 1
+                continue
+
+            if token.pos_ in ("NOUN", "PROPN"):
+                if (i + 1) < len(sent) and sent[i + 1].pos_ in ("NOUN", "PROPN"):
+                    if not first_noun_skipped:
+                        first_noun_skipped = True
+                    output += token.text + whitespace
+                    i += 1
+                    continue
+                if not first_noun_skipped:
+                    first_noun_skipped = True
+                    output += token.text + whitespace
+                    i += 1
                     continue
 
-        is_plural = token.tag_ == "NNS"
-        base = token.text.lower()
+                if base in SLANG_MAP:
+                    if noun_replacements < 3:
+                        candidate: Union[str, List[str]] = SLANG_MAP.get(base)
+                        pick = random.choice(candidate) if isinstance(candidate, list) else candidate
+                        if token.pos_ == "NOUN" and is_plural:
+                            pick = pluralize_slang(pick)
+                        if token.text and token.text[0].isupper():
+                            pick = pick.capitalize()
+                        replacement = pick
+                        noun_replacements += 1
+                    else:
+                        replacement = token.text
+                    output += replacement + whitespace
+                    i += 1
+                    continue
+                else:
+                    if noun_replacements < 3:
+                        replacement = "jawn" if not is_plural else "jawns"
+                        noun_replacements += 1
+                    else:
+                        replacement = token.text
+                    output += replacement + whitespace
+                    i += 1
+                    continue
 
-        # Explicitly exempt personal pronouns from default conversion.
-        # Only convert pronouns if they are explicitly present in PHILLY_SLANG
-        if token.pos_ == "PRON":
-            if base in PHILLY_SLANG:
-                candidate = PHILLY_SLANG.get(base)
-                pick = random.choice(candidate) if isinstance(candidate, list) else candidate
-                if token.text and token.text[0].isupper():
-                    pick = pick.capitalize()
-                out_tokens.append(pick)
-            else:
-                out_tokens.append(token.text)
-            continue
+            output += replacement + whitespace
+            i += 1
 
-        # Handle nouns and proper nouns. If a mapping exists, use it; if not,
-        # fallback to 'jawn'/'jawns' for nouns only.
-        if token.pos_ in ("NOUN", "PROPN") and base in PHILLY_SLANG:
-            candidate: Union[str, List[str]] = PHILLY_SLANG.get(base)
-            if isinstance(candidate, list):
-                pick = random.choice(candidate)
-            else:
-                pick = candidate
-
-            # Apply pluralization for nouns
-            if token.pos_ == "NOUN" and is_plural:
-                pick = pluralize_slang(pick)
-
-            if token.text and token.text[0].isupper():
-                pick = pick.capitalize()
-
-            out_tokens.append(pick)
-        elif token.pos_ == "NOUN":
-            out_tokens.append("jawn" if not is_plural else "jawns")
-        else:
-            out_tokens.append(token.text)
-
-    # Reconstruct text preserving punctuation spacing
-    # Reconstruct text preserving punctuation spacing. Note that out_tokens
-    # may be shorter than doc when multi-token phrases were replaced by a
-    # single output token; we iterate through out_tokens and use spacing rules
-    # based on the next original token in the doc where possible.
-    output = ""
-    doc_iter = iter(doc)
-    for out_tok in out_tokens:
-        # Advance doc_iter until we reach a non-space token to check punctuation
-        orig = next(doc_iter, None)
-        # If orig is punctuation, append directly, otherwise prepend a space
-        if orig is not None and orig.is_punct:
-            output += out_tok
-        else:
-            output += (" " + out_tok)
     return output.strip()
 
 
-__all__ = ["convert_to_philly_slang", "PHILLY_SLANG", "pluralize_slang"]
+__all__ = [
+    "convert_to_philly_slang",
+    "reload_slang_mapping",
+    "SLANG_MAP",
+    "pluralize_slang",
+]

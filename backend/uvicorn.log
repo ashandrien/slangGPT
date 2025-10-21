@@ -1,22 +1,346 @@
-INFO:     Started server process [64932]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
+INFO:     Will watch for changes in these directories: ['/Users/ashleyandrien/Documents/Code/phillygpt/backend']
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     127.0.0.1:57657 - "POST /slang HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57671 - "POST /slang HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57788 - "POST /slang HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57835 - "POST /slang HTTP/1.1" 200 OK
-INFO:     127.0.0.1:57900 - "POST /slang HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58155 - "POST /slang HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58157 - "POST /slang HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58164 - "POST /slang HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58184 - "POST /slang HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58227 - "POST /slang HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58234 - "POST /slang HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58294 - "POST /reload_slang HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:58295 - "POST /slang HTTP/1.1" 200 OK
-INFO:     127.0.0.1:58531 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     Started reloader process [28637] using WatchFiles
+INFO:     Started server process [28640]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:61291 - "POST /openai_slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:61366 - "POST /openai_slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:61382 - "POST /openai_slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:61486 - "POST /openai_slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:61497 - "POST /openai_slang HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
 INFO:     Shutting down
 INFO:     Waiting for application shutdown.
 INFO:     Application shutdown complete.
-INFO:     Finished server process [64932]
+INFO:     Finished server process [28640]
+INFO:     Started server process [31299]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [31299]
+INFO:     Started server process [31658]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+INFO:     127.0.0.1:61694 - "POST /slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:61699 - "POST /openai_slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:61862 - "POST /openai_slang HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [31658]
+INFO:     Started server process [32551]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [32551]
+INFO:     Started server process [32771]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [32771]
+INFO:     Started server process [32783]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [32783]
+INFO:     Started server process [32791]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+INFO:     127.0.0.1:61917 - "POST /slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:61922 - "POST /openai_slang HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [32791]
+INFO:     Started server process [33008]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [33008]
+INFO:     Started server process [33017]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [33017]
+INFO:     Started server process [33025]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:61972 - "POST /openai_slang HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [33025]
+INFO:     Started server process [33236]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [33236]
+INFO:     Started server process [33262]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:62053 - "POST /openai_slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62492 - "HEAD /index.html HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62835 - "POST /slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62837 - "POST /slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:62841 - "POST /openai_slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:62905 - "POST /openai_slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64746 - "POST /slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:64752 - "POST /openai_slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64809 - "POST /slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65142 - "POST /openai_slang HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [33262]
+INFO:     Started server process [99537]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'slang_clean.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [99537]
+INFO:     Started server process [99545]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'slang.py', 'slang_clean.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [99545]
+INFO:     Started server process [99551]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65186 - "POST /openai_slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65192 - "POST /openai_slang HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [99551]
+INFO:     Started server process [1013]
+INFO:     Waiting for application startup.
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1013]
+INFO:     Started server process [1021]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'slang_clean.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1021]
+INFO:     Started server process [1025]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'slang_clean.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1025]
+INFO:     Started server process [1033]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+INFO:     127.0.0.1:65241 - "POST /slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65270 - "POST /openai_slang HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'slang_clean.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1033]
+INFO:     Started server process [5074]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'slang_clean.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [5074]
+INFO:     Started server process [5081]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65328 - "POST /openai_slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65337 - "POST /openai_slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65356 - "POST /openai_slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:65364 - "POST /openai_slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65369 - "POST /slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65370 - "POST /slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65371 - "POST /slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65372 - "POST /slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65386 - "POST /slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65387 - "POST /slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65388 - "POST /slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65389 - "POST /slang HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [5081]
+INFO:     Started server process [10523]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+INFO:     127.0.0.1:65407 - "POST /slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65408 - "POST /slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65409 - "POST /slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65410 - "POST /slang HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [10523]
+INFO:     Started server process [11130]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11130]
+INFO:     Started server process [11145]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+INFO:     127.0.0.1:65450 - "POST /slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65451 - "POST /slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65452 - "POST /slang HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65453 - "POST /slang HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11145]
+INFO:     Started server process [16468]
+INFO:     Waiting for application startup.
+INFO:phillygpt:spaCy loaded. OpenAI configured: True. OpenAI model: gpt-4o-mini
+INFO:     Application startup complete.
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50904 - "POST /openai_slang HTTP/1.1" 200 OK
+INFO:httpx:HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+INFO:     127.0.0.1:50982 - "POST /openai_slang HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [16468]
+Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x0000000206b00800 (most recent call first):
+  <no Python frame>
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x0000000206b00800 (most recent call first):
+  <no Python frame>
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x0000000206b00800 (most recent call first):
+  <no Python frame>
+WARNING:  WatchFiles detected changes in 'slang.py'. Reloading...
+Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x0000000206b00800 (most recent call first):
+  <no Python frame>
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x0000000206b00800 (most recent call first):
+  <no Python frame>
+WARNING:  WatchFiles detected changes in 'main.py'. Reloading...
+Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x0000000206b00800 (most recent call first):
+  <no Python frame>
+WARNING:  WatchFiles detected changes in 'slang.py', 'main.py'. Reloading...
+Fatal Python error: init_sys_streams: can't initialize sys standard streams
+Python runtime state: core initialized
+OSError: [Errno 9] Bad file descriptor
+
+Current thread 0x0000000206b00800 (most recent call first):
+  <no Python frame>

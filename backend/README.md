@@ -43,7 +43,6 @@ uvicorn main:app --host 127.0.0.1 --port 8000 &
 ```
 
 Environment-controlled allowed origins
---------------------------------------
 
 You can control allowed CORS origins at runtime using the `ALLOWED_ORIGINS` environment variable (comma-separated). Example (zsh/bash):
 
@@ -56,4 +55,31 @@ uvicorn main:app --host 127.0.0.1 --port 8000
 unset ALLOWED_ORIGINS
 uvicorn main:app --host 127.0.0.1 --port 8000
 ```
+
+
+Local .env workflow (OpenAI key)
+--------------------------------
+
+Place local, sensitive environment variables in `backend/.env` (do NOT commit).
+Use the provided `backend/.env.example` as a template.
+
+Example (`backend/.env`):
+
+```
+OPENAI_API_KEY=sk_XXXXXXXXXXXXXXXXXXXX
+OPENAI_MODEL=gpt-4o-mini
+ALLOWED_ORIGINS=http://127.0.0.1:5173
+```
+
+The app will automatically load `backend/.env` at startup (dev convenience).
+
+Important:
+- Never commit `backend/.env`. The repo `.gitignore` already ignores this file.
+- For Docker, do not bake secrets into images. Pass the key at runtime:
+
+```bash
+docker run --rm -e OPENAI_API_KEY="$OPENAI_API_KEY" -p 8000:8000 phillygpt:latest
+```
+
+- In CI (GitHub Actions) store the key in repository secrets and inject it into the runner via `${{ secrets.OPENAI_API_KEY }}`. Do not write secrets into built images.
 
