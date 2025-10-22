@@ -1,6 +1,9 @@
 
-# SlangGPT — Local development README
+# SlangGPT 
 
+Hello local yokels, this project is a chatbot that mimics ChatGPT, but translates things into local slang.  The goal is to create extensible slang documents which you can plug-in to make the speech more localized & realistic.  I have dreams of an MCP server, but need help in modeling the correct NLP.  Thanks for visiting.
+
+# Running the project
 This README shows how to run the SlangGPT app locally (backend + frontend) without Docker.
 
 Quick start (dev)
