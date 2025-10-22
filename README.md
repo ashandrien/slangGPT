@@ -107,9 +107,54 @@ Security
 - Keep `.env` out of source control. Do not commit API keys.
 
 That's it — open issues or ask me to help automate these steps further (scripts, Makefile, Dockerfile adjustments, etc).
-=======
-## Slang GPT
-A vibe-coded monstrosity with the following pieces:
-* Python
-* Vite
-* React
+
+Contributing slang mappings
+---------------------------
+We welcome contributions that add or improve local slang mappings. Below are quick guidelines so contributions are consistent and easy to review.
+
+1) File format
+
+- The mapping file is a JSON object. Keys are lowercase source words or short phrases (e.g. "sandwich", "you all").
+- Values may be a single replacement string or a list of replacement strings to allow randomization in the output. Example:
+
+```json
+{
+	"sandwich": ["primanti", "hoagie"],
+	"friend": "nebby"
+}
+```
+
+2) Validation
+
+- Before creating a pull request, run the validator to catch syntax or shape problems:
+
+```bash
+python3 scripts/validate_slang.py backend/data/pittsburgh_slang.json
+# or your new file path
+```
+
+The validator checks that the top-level value is an object and that every value is a string or list of strings. It exits non-zero on problems.
+
+3) Testing locally
+
+- Try the demo script to quickly see how the mapping changes conversion results (no spaCy required):
+
+```bash
+python3 scripts/demo_swap_slang.py
+```
+
+- To run the backend server with your mapping, set `SLANG_FILE` in `backend/.env` (absolute path or path relative to `backend/`) and restart the server. Example:
+
+```bash
+echo "SLANG_FILE=backend/data/pittsburgh_slang.json" >> backend/.env
+# restart uvicorn
+```
+
+4) PR checklist for mapping changes
+
+- [ ] Run `python3 scripts/validate_slang.py <path-to-file>` and ensure it reports OK.
+- [ ] Include a short description in the PR explaining the region/context for the mapping.
+- [ ] Keep mappings focused and avoid offensive or abusive terms. The project maintainers reserve the right to refuse or sanitize submissions that contain harmful content.
+- [ ] Add a small example or test line in the PR description showing an input and expected converted output.
+
+If you'd like, I can add a GitHub Actions job that runs `scripts/validate_slang.py` on PRs to automatically block malformed mappings from being merged.
