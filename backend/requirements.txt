@@ -4,3 +4,4 @@ spacy==3.6.0
 python-multipart==0.0.6
 openai>=1.0.0
 python-dotenv>=1.0.0
+honeycomb-beeline>=4.0.0

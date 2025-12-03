@@ -18,12 +18,35 @@ if _env_path.exists():
     load_dotenv(dotenv_path=str(_env_path))
 import logging
 
+# Honeycomb / Beeline optional integration
+HONEYCOMB_API_KEY = os.getenv("HONEYCOMB_API_KEY")
+HONEYCOMB_DATASET = os.getenv("HONEYCOMB_DATASET", "slanggpt-backend")
+HONEYCOMB_ENABLED = False
+try:
+    if HONEYCOMB_API_KEY:
+        import beeline
+
+        beeline.init(writekey=HONEYCOMB_API_KEY, dataset=HONEYCOMB_DATASET, service_name="slanggpt-backend")
+        HONEYCOMB_ENABLED = True
+except Exception as e:
+    # don't fail startup if beeline isn't available or initialization fails
+    HONEYCOMB_ENABLED = False
+    # defer logging setup until logger exists
+    try:
+        print(f"Honeycomb init failed or not configured: {e}")
+    except Exception:
+        pass
+
 
 app = FastAPI(title="phillygpt-backend")
 
 # Configure basic logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("phillygpt")
+if HONEYCOMB_ENABLED:
+    logger.info(f"Honeycomb beeline initialized (dataset={HONEYCOMB_DATASET})")
+else:
+    logger.info("Honeycomb not enabled")
 
 # --- Safety limits and sanitization -------------------------------------------------
 # Maximum request body (bytes) we'll accept without returning 413
@@ -49,6 +72,34 @@ async def limit_content_length(request: Request, call_next):
         if n > MAX_CONTENT_LENGTH:
             return JSONResponse(status_code=413, content={"detail": "Payload too large"})
     return await call_next(request)
+
+
+# Optional Honeycomb trace middleware (non-fatal if beeline isn't available)
+if HONEYCOMB_ENABLED:
+    try:
+        import beeline as _beeline
+
+        @app.middleware("http")
+        async def beeline_middleware(request: Request, call_next):
+            try:
+                # Add some useful context fields for every request
+                _beeline.add_context_field("http.method", request.method)
+                _beeline.add_context_field("http.path", request.url.path)
+                _beeline.add_context_field("client.ip", request.client.host if request.client else "")
+                _beeline.start_trace()
+            except Exception:
+                pass
+            try:
+                response = await call_next(request)
+                return response
+            finally:
+                try:
+                    _beeline.end_trace()
+                except Exception:
+                    pass
+    except Exception:
+        # If importing beeline fails, skip middleware silently
+        pass
 
 
 def sanitize_text(s: str, max_chars: int = MAX_TEXT_LENGTH) -> str:
@@ -336,6 +387,49 @@ def reload_slang():
         return {"ok": False, "error": str(e)}
 
 
+@app.get("/slang_files")
+def list_slang_files(request: Request):
+    """Return a list of available slang JSON files under backend/data.
+
+    For safety this only allows listing files from the backend/data directory.
+    """
+    try:
+        base = Path(__file__).resolve().parent / "data"
+        files = [p.name for p in base.glob("*.json") if p.is_file()]
+        return {"ok": True, "files": files}
+    except Exception as e:
+        logger.exception("Failed to list slang files: %s", e)
+        return {"ok": False, "error": str(e)}
+
+
+class SetSlang(BaseModel):
+    filename: str
+
+
+@app.post("/set_slang_file")
+def set_slang_file_endpoint(req: SetSlang, request: Request):
+    """Set the active slang file (local/dev use only).
+
+    This endpoint accepts a filename (not a path) that must exist under
+    backend/data. For safety it only accepts requests from localhost.
+    """
+    client = request.client.host if request.client is not None else None
+    if client not in ("127.0.0.1", "::1", "localhost"):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    try:
+        from slang import set_slang_file
+
+        ok = set_slang_file(req.filename)
+        if not ok:
+            raise HTTPException(status_code=400, detail="Invalid filename or not allowed")
+        return {"ok": True, "filename": req.filename}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.exception("Failed to set slang file: %s", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/health")
 def health():
     """Return a small health JSON describing optional integrations.
@@ -354,5 +448,40 @@ def health():
         "openai_model": os.getenv("OPENAI_MODEL"),
         "spacy_loaded": spacy_loaded,
         "slang_entries": slang_entries,
+    }
+
+
+@app.get("/observability_status")
+def observability_status():
+    """Return a small observability status useful for debugging Honeycomb setup.
+
+    Fields:
+    - honeycomb_enabled: whether beeline was initialized successfully
+    - honeycomb_dataset: configured dataset name
+    - honeycomb_api_key_present: whether an API key is set in env
+    - slang_entries: number of entries in the configured slang mapping
+    - active_slang_file: resolved path to the currently-loaded slang JSON (if available)
+    """
+    # active slang file is tracked in the slang module's _data_path variable
+    active_file = None
+    try:
+        import importlib
+
+        slang_mod = importlib.import_module("slang")
+        dp = getattr(slang_mod, "_data_path", None)
+        if dp is not None:
+            try:
+                active_file = str(dp)
+            except Exception:
+                active_file = repr(dp)
+    except Exception:
+        active_file = None
+
+    return {
+        "honeycomb_enabled": bool(globals().get("HONEYCOMB_ENABLED", False)),
+        "honeycomb_dataset": globals().get("HONEYCOMB_DATASET"),
+        "honeycomb_api_key_present": bool(os.getenv("HONEYCOMB_API_KEY")),
+        "slang_entries": len(SLANG_MAP) if isinstance(SLANG_MAP, dict) else 0,
+        "active_slang_file": active_file,
     }
 

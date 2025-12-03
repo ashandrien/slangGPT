@@ -6,6 +6,8 @@ export default function Chat() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [availableFiles, setAvailableFiles] = useState<string[]>([])
+  const [selectedFile, setSelectedFile] = useState<string | null>(null)
   // default to using ChatGPT flow; checkbox will opt into plain "translate" behavior
   const [useOpenAI, setUseOpenAI] = useState(true)
   const listRef = useRef<HTMLDivElement | null>(null)
@@ -14,6 +16,22 @@ export default function Chat() {
     // scroll to bottom on new message
     if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight
   }, [messages, loading])
+
+  useEffect(() => {
+    // fetch available slang mapping files from the backend
+    async function loadFiles() {
+      try {
+        const res = await fetch('/slang_files')
+        if (!res.ok) return
+        const data = await res.json()
+        setAvailableFiles(data.files || [])
+        if ((data.files || []).length > 0) setSelectedFile((data.files || [])[0])
+      } catch (err) {
+        // ignore
+      }
+    }
+    loadFiles()
+  }, [])
 
   async function send() {
     const text = input.trim()
@@ -39,7 +57,7 @@ export default function Chat() {
       const assistantMsg: Message = { role: 'assistant', text: assistantText }
       setMessages((m) => [...m, assistantMsg])
     } catch (err) {
-      setMessages((m) => [
+      setMessages((m) => [  
         ...m,
         { role: 'assistant', text: `Error contacting backend: ${err}` },
       ])
@@ -83,6 +101,41 @@ export default function Chat() {
       </div>
 
       <div className="composer">
+        <div className="slang-select">
+          <label htmlFor="slang-file">Slang mapping:</label>
+          <select
+            id="slang-file"
+            value={selectedFile ?? ''}
+            onChange={(e) => setSelectedFile(e.target.value)}
+          >
+            {availableFiles.map((f) => (
+              <option key={f} value={f}>{f}</option>
+            ))}
+          </select>
+          <button
+            onClick={async () => {
+              if (!selectedFile) return
+              try {
+                const res = await fetch('/set_slang_file', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ filename: selectedFile }),
+                })
+                if (!res.ok) {
+                  const t = await res.text()
+                  setMessages((m) => [...m, { role: 'assistant', text: `Failed to set mapping: ${t}` }])
+                } else {
+                  setMessages((m) => [...m, { role: 'assistant', text: `Switched mapping to ${selectedFile}` }])
+                }
+              } catch (err) {
+                setMessages((m) => [...m, { role: 'assistant', text: `Error setting mapping: ${err}` }])
+              }
+            }}
+            aria-label="Set mapping"
+          >
+            Set
+          </button>
+        </div>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
