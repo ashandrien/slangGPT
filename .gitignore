@@ -9,6 +9,8 @@ venv/
 
 # Backend env file (do not commit)
 /backend/.env
+# Local dotenv files
+.env
 
 # macOS
 .DS_Store

@@ -106,6 +106,17 @@ If you'd like, I can add `make stop-dev` to automate stopping both.
 Security
 - Keep `.env` out of source control. Do not commit API keys.
 
+Observability (Honeycomb)
+-------------------------
+If you'd like to send traces to Honeycomb, set the following environment variables in `backend/.env` (do NOT commit real keys):
+
+```
+HONEYCOMB_API_KEY=key-REPLACE_ME
+HONEYCOMB_DATASET=slanggpt-backend
+```
+
+The backend will attempt to initialize Honeycomb via the `beeline` library if `HONEYCOMB_API_KEY` is present. We intentionally make this optional so the app runs without Honeycomb configured.
+
 That's it — open issues or ask me to help automate these steps further (scripts, Makefile, Dockerfile adjustments, etc).
 
 Contributing slang mappings

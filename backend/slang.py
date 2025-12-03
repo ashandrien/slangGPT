@@ -205,5 +205,37 @@ __all__ = [
     "convert_to_philly_slang",
     "reload_slang_mapping",
     "SLANG_MAP",
+    "set_slang_file",
     "pluralize_slang",
 ]
+
+
+def set_slang_file(pathlike: str) -> bool:
+    """Set the module's slang JSON file and reload the mapping.
+
+    Accepts either an absolute path or a path relative to the backend module
+    directory. Returns True on success, False on failure. This is intentionally
+    permissive for local/dev use; callers should validate filenames when used
+    from untrusted sources.
+    """
+    global _data_path, _slang_mtime
+    try:
+        cand = Path(pathlike)
+        if not cand.is_absolute():
+            cand = _module_dir / pathlike
+        # Basic safety: require the file to exist and be under the backend/data dir
+        data_dir = _module_dir / "data"
+        try:
+            cand_resolved = cand.resolve()
+            # ensure it's underneath backend/data
+            if data_dir.resolve() not in cand_resolved.parents and cand_resolved != data_dir.resolve():
+                return False
+        except Exception:
+            return False
+        if not cand.exists() or not cand.is_file():
+            return False
+        _data_path = cand
+        reload_slang_mapping()
+        return True
+    except Exception:
+        return False
